@@ -91,17 +91,15 @@ function rendmovie(p) {
 		sendmsg("render",{mode:0})
 		const fr = (p.etime-p.stime)*p.fps
 		const source = sendmsg("getcanvas")
-		const ctx = $('mcan').getContext("2d")
 		const img = document.createElement("img")
 		let f = 0 
 		let t = p.stime
 		requestAnimationFrame(()=>{ff(t)})
 		function ff(t) {
 			sendmsg("render",{mode:2,time:t,cb:()=>{
-				$('rp').innerHTML = `${imgs.length}/${fr}` 
+				$('rp').innerHTML = `${imgs.length+1}/${fr}` 
 				source.toBlob(b=>{
 					imgs.push(b)
-
 					if(++f<fr) {
 						t = (p.stime + (p.etime-p.stime)*f/fr)*1000
 						requestAnimationFrame(()=>{ff(t)})
@@ -114,38 +112,22 @@ function rendmovie(p) {
 	})
 }
 async function encodemovie(imgs) {
-	const ffmpeg = createFFmpeg({ log: true })
+	const ffmpeg = createFFmpeg({ log: false })
 	await ffmpeg.load()
-	ffmpeg.setProgress(({ ratio }) => {
-		$('ep').innerHTML = ratio
+	ffmpeg.setLogger(({ type, message }) => {
+//  	console.log(type, message);
+		$('t_log').innerHTML += message+"\n"
+		$('t_log').scrollTo(0,$('t_log').scrollHeight)
  	})
 	for(let i=0;i<imgs.length;i++) {
 		ffmpeg.FS('writeFile', "img"+i+".png", await fetchFile(imgs[i]))
 	}
-	await ffmpeg.run(...("-framerate 60 -i img%d.png -an -crf 20 -vcodec libx264 -pix_fmt yuv420p -r 60 o.mp4".split(" ")))
+	const opt = "-framerate 60 -i img%d.png "+$('i_ffmpeg').value+" o.mp4"
+	await ffmpeg.run(...(opt.split(" ")))
 	const data = ffmpeg.FS('readFile', 'o.mp4');
 	const src = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }))
-	console.log(src)
+	$('downloadlink').parentNode.style.display = "inline"
 	$('downloadlink').href = src
-}
-function capmovie(imgs) {
-	return new Promise((resolve,reject)=>{
-		const fps = 60
-		const dur = imgs.length/fps *1000
-		const st = performance.now()
-		requestAnimationFrame(ff)
-		function ff(time) {
-			const t = (performance.now()-st)
-			if(t>dur) {
-				resolve() 
-				return
-			}
-			const n = Math.floor(t/dur*imgs.length) 
-			console.log(n)
-			ctx.drawImage(imgs[n],0,0)
-			requestAnimationFrame(ff)
-		}
-	})
 }
 </script>
 <style type="text/css">
@@ -160,6 +142,10 @@ button,input {
 }
 h3 {
 	margin:0;
+}
+textarea {
+	background-color:#444;
+	color:#ccc ;
 }
 dt {
 	width:9rem ;
@@ -215,10 +201,11 @@ lkg window:<input id=i_window type=text value="sample1.html">
  <dt>fps:</dt><dd><input type=text name=fps size=5 value=60></dd>
 </dl>
 </form>
-<button id=b_mrender>RENDER movie</button><span id=rp></span><br/>
-<button id=b_mcap>ENCODE movie</button><span id=ep></span> 
-<a  id=downloadlink download="v.mp4">download</a><br/>
-<canvas id=mcan width=300 height=300 style="width:300px;display:block">
+<button id=b_mrender>RENDER movie</button> <span id=rp></span><br/>
+<button id=b_mcap>ENCODE movie</button> <span id=ep></span> 
+<button style="display:none"><a id=downloadlink download="v.mp4" >movie DOWNLOAD</a></button><br/>
+ffmpeg option: <input id=i_ffmpeg size=60 value="-an -crf 20 -vcodec libx264 -pix_fmt yuv420p -r 60 "><br/>
+log: <textarea id=t_log cols=100 rows=10></textarea>
 </div>
 <hr/>
 </body>
