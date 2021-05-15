@@ -1,0 +1,95 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "holoplay-core@0.0.8",
+        "scope": null,
+        "escapedName": "holoplay-core",
+        "name": "holoplay-core",
+        "rawSpec": "0.0.8",
+        "spec": "0.0.8",
+        "type": "version"
+      },
+      "/hosting/wakufactory.jp/www/wxr/lg/node_modules/holoplay"
+    ]
+  ],
+  "_from": "holoplay-core@0.0.8",
+  "_hasShrinkwrap": false,
+  "_id": "holoplay-core@0.0.8",
+  "_inCache": true,
+  "_location": "/holoplay-core",
+  "_nodeVersion": "12.10.0",
+  "_npmOperationalInternal": {
+    "host": "s3://npm-registry-packages",
+    "tmp": "tmp/holoplay-core_0.0.8_1586885385163_0.02907723750677138"
+  },
+  "_npmUser": {
+    "name": "rasca0027",
+    "email": "kelly@lookingglassfactory.com"
+  },
+  "_npmVersion": "6.13.0",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "holoplay-core@0.0.8",
+    "scope": null,
+    "escapedName": "holoplay-core",
+    "name": "holoplay-core",
+    "rawSpec": "0.0.8",
+    "spec": "0.0.8",
+    "type": "version"
+  },
+  "_requiredBy": [
+    "/holoplay"
+  ],
+  "_resolved": "https://registry.npmjs.org/holoplay-core/-/holoplay-core-0.0.8.tgz",
+  "_shasum": "cee12375c4488914a4a37afd9e16e8fa165118cf",
+  "_shrinkwrap": null,
+  "_spec": "holoplay-core@0.0.8",
+  "_where": "/hosting/wakufactory.jp/www/wxr/lg/node_modules/holoplay",
+  "author": {
+    "name": "Looking Glass Factory"
+  },
+  "dependencies": {
+    "cbor-js": "^0.1.0",
+    "ws": "^7.2.0"
+  },
+  "description": "A library that works with Looking Glass HoloPlay Service",
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^11.0.2",
+    "@rollup/plugin-node-resolve": "^7.1.1",
+    "rollup": "^2.1.0",
+    "terser": "^4.6.7"
+  },
+  "directories": {},
+  "dist": {
+    "integrity": "sha512-fErVQ6dB8onRRKPQGxBT6VOCTIFjnoOu8U2+TBxNJLGgVEeOR6hr4yYEMHSSSOFUjyFLpWXWfEkFt34vOS+VFA==",
+    "shasum": "cee12375c4488914a4a37afd9e16e8fa165118cf",
+    "tarball": "https://registry.npmjs.org/holoplay-core/-/holoplay-core-0.0.8.tgz",
+    "fileCount": 20,
+    "unpackedSize": 1471559,
+    "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJelfMJCRA9TVsSAnZWagAA+v4P/2NTiEWe4tvl0H3WzOBO\nFZEuq1xh4rTovYiP47y+gDJR3lw1SewpgqAC/E3go7FGIIAqzxnr61qm338/\nUj4PvYKpX3Ro8MOgwvpMjJAsS+p5AWkDV48y6HYeFLvfIBWGHoO9JhvNKOiT\n6rxm46noX7kSnKt6MAPUkNOOQ5dmQw9ZQ3kgcHcEsB2P11Z1cqfvRIdOJGOT\nMBWbM+7RY//TLIrHF5G8Sb5fFO2j+JL88bRo6Q/MV+8GMkuKhiuPuJhiBkxe\ne14MCyuhbvN7XiDG6bor3s55bOtdPTD6XqF8281Nm4G/BninybyBtfvBM1RM\nH2hkInL+plpXik4Ierxo9T5j9QnVk5DM60vUeh3UJts7CxXNXSxKILIWZzsd\nayoF2rKYC8S9At7+x37Wf+Ke/O209sci7SAWYTTHGURq8MKi80I1VpA0qD1h\n+kgn0JMV7ZkjKmv0K7C0cBSxA4Aac+rwmL40CNpMM7bxlhVS1dBliogjq3dj\n4qXPPFpAcIKb3YVYao1Ttoy52xxZYpB3RpPXxPfnRrGEgLl57TOAkRhJf/cU\nswE56MyfdHKlF7ZIVadLFJtj7zTYndRJFANMVzhxv3fESD7fesg4bZOkZXdy\nETsbkFc1Ip5GPt9EjDHvIDVXLlP/FoVhwKSKXWB2qATa84WGmbAYT1PokkE1\nXC/y\r\n=vHH4\r\n-----END PGP SIGNATURE-----\r\n"
+  },
+  "gitHead": "9e006fce9a45631ed89fcdabfcdeb8466a42847f",
+  "keywords": [
+    "looking glass",
+    "holograms",
+    "holographic"
+  ],
+  "license": "SEE LICENSE IN LICENSE.md",
+  "main": "dist/holoplaycore.js",
+  "maintainers": [
+    {
+      "name": "rasca0027",
+      "email": "kelly@lookingglassfactory.com"
+    }
+  ],
+  "module": "dist/holoplaycore.module.js",
+  "name": "holoplay-core",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "scripts": {
+    "build": "rollup --config && terser dist/holoplaycore.js -m --output dist/holoplaycore.min.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "0.0.8"
+}

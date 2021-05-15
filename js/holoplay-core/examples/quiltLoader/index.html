@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>HoloPlayCore.JS by Looking Glass Factory</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <link rel="stylesheet" href="./milligram.min.css">
+    <link rel="stylesheet" href="./style.css">
+    <link href="https://fonts.googleapis.com/css?family=PT+Mono&display=swap" rel="stylesheet">
+    
+    <script src="../../dist/holoplaycore.js"></script>
+    <script src="script.js" defer></script>
+  </head>  
+  <body>
+    <div class="container">
+
+      <h1>Learn to use HoloPlayCore.JS by Looking Glass!</h1>
+
+      <div>
+        <h3>
+          Step 0. Install the HoloPlay Service
+        </h3>
+        <p>
+        You can download it <a href="https://lookingglassfactory.com/software/holoplay-service">here</a>!
+        </p>
+        <h3>
+          Step 1. Select an example quilt...
+        </h3>
+        <div class="row">
+          <div class="column">
+            <img class="example-img" name="missy" src="missythumbnail.png">
+          </div>
+          <div class="column">
+            <img class="example-img" name="knife" src="knife-thumbnail.jpg">
+          </div>
+          <div class="column">
+            <img class="example-img" name="assassin" src="assassinthumb.png?">
+          </div>
+        </div>
+        
+        <h3>
+          ... or upload your own quilt!
+        </h3>
+        <form>
+          <fieldset>
+            <label for="files">Select a file: </label>
+            <input id="files" type="file" name="myFile">
+          </fieldset>
+        </form>
+        <div id="info">
+        </div>
+      </div>
+      
+      
+      <div>
+        <h3>
+          Step 2. Send to Looking Glass
+        </h3>
+        <button class="button button-outline" id="reset">Reset Values</button>
+        <form>
+          <fieldset>
+            <div class="row">
+              <div class="column">
+                <label for="vx">Columns</label>
+                <input type="number" name="vx" value="5" min="1">
+              </div>
+              <div class="column">
+                <label for="vy">Rows</label>
+                <input type="number" name="vy" value="9" min="1">
+              </div>
+              <div class="column">
+                <label for="vtotal">Total Views</label>
+                <input type="number" name="vtotal" value="45" min="1">
+              </div>
+              <div class="column">
+                <label for="aspect">Aspect Ratio</label>
+                <input type="number" name="aspect" value="1.6" min="0">
+              </div>
+            </div>
+            
+          </fieldset>
+        </form>
+        <button id="show-quilt" style="margin-bottom: 40px">
+          Send Quilt to Looking Glass
+        </button>
+
+      </div>
+      
+      <div>
+        <h3>
+          Step 3. Learn how to use HoloPlayCore JS!
+        </h3>
+        <p>
+          There are 3 ways to use HoloPlayCore.js. You can either import it via script tag, like so:
+        <pre><code>
+&lt;script src="holoplaycore.js"&gt;&lt;/script&gt;
+</code></pre>
+          Or import it using ES6 module syntax:
+        <pre><code>
+import * as HoloPlayCore from 'holoplaycore.module.js';
+</code></pre>
+          Or even use it in node.js.
+        <pre><code>
+const HoloPlayCore = require('holoplaycore.js');
+</code></pre>
+
+        </p>
+        <p>
+          Instantiate a HoloPlay client.
+        </p>
+        <pre><code>
+let client = new HoloPlayCore.Client(onopen, onerror, onclose);
+
+</code></pre>
+        <p>
+          By sending a show command with attached binaries of the loaded file, you can show stuff in the Looking Glass!
+        </p>
+        <pre><code>
+let showCmd = new HoloPlayCore.ShowMessage({vx :5, vy :9, vtotal: 45}, rawData);
+  client
+    .sendMessage(showCmd)
+    .then(function() { 
+      document.getElementById("info").innerHTML = "Quilt displayed.";
+    })
+    .catch(function(err) {
+      console.log(err);
+    });
+    
+</code></pre>
+      </div>
+    </div>
+
+  </body>
+</html>

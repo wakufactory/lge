@@ -1,0 +1,114 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "holoplay",
+        "scope": null,
+        "escapedName": "holoplay",
+        "name": "holoplay",
+        "rawSpec": "",
+        "spec": "latest",
+        "type": "tag"
+      },
+      "/hosting/wakufactory.jp/www/wxr/lg"
+    ]
+  ],
+  "_from": "holoplay@latest",
+  "_hasShrinkwrap": false,
+  "_id": "holoplay@1.0.3",
+  "_inCache": true,
+  "_location": "/holoplay",
+  "_nodeVersion": "10.16.2",
+  "_npmOperationalInternal": {
+    "host": "s3://npm-registry-packages",
+    "tmp": "tmp/holoplay_1.0.3_1587593960220_0.4981833581042405"
+  },
+  "_npmUser": {
+    "name": "evan.moore.lkg",
+    "email": "evan.moore@lookingglassfactory.com"
+  },
+  "_npmVersion": "6.14.4",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "holoplay",
+    "scope": null,
+    "escapedName": "holoplay",
+    "name": "holoplay",
+    "rawSpec": "",
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "https://registry.npmjs.org/holoplay/-/holoplay-1.0.3.tgz",
+  "_shasum": "c6e13989d9df37315231f50f4f7309d83568a0ee",
+  "_shrinkwrap": null,
+  "_spec": "holoplay",
+  "_where": "/hosting/wakufactory.jp/www/wxr/lg",
+  "author": {
+    "name": "Looking Glass Factory"
+  },
+  "bugs": {
+    "url": "https://github.com/Looking-Glass/HoloPlayJS_Issues/issues"
+  },
+  "dependencies": {
+    "@ungap/event-target": "^0.1.0",
+    "fullscreen-polyfill": "^1.0.2",
+    "holoplay-core": "0.0.8",
+    "three": "^0.102.1"
+  },
+  "description": "A library for the Looking Glass 3D display that relies on three.js to show content in true 3D from the browser.",
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^7.1.1",
+    "concurrently": "^5.1.0",
+    "rollup": "^2.1.0",
+    "terser": "^4.6.7"
+  },
+  "directories": {},
+  "dist": {
+    "integrity": "sha512-r1sLLcO8/pSg1rb7051JSSVkWoLZddK/+3jXS677dgM0u3AwluoikDxTAbFvkVMj4OMbodHoMhoIaJLZUcWyHA==",
+    "shasum": "c6e13989d9df37315231f50f4f7309d83568a0ee",
+    "tarball": "https://registry.npmjs.org/holoplay/-/holoplay-1.0.3.tgz",
+    "fileCount": 15,
+    "unpackedSize": 293536,
+    "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJeoMLoCRA9TVsSAnZWagAAQz0P/1TxtvjprAr15XvgccPK\nSFsMOMejILPmQIgyZv2V2ZquDy1LI8wqTwGFYb3Y8EaGL6QlO8tuC5h9Idfr\nZITcnIe/+G+CUbWrOe0hp5T7W/NcqNchmdy2kls8s8SKLx4N/lNEINg9flCI\npGA57UZT7hMFjN7Xb6Fn54tcgzpwM/b2VeX6cqSHNhRgIh9hJlUd/oZPN0T9\n+ti3qnl5yaLObJyBCc3pfmMicLyVpT7k9B+XRbs3r5NxOvsfP53PF6tobYo3\nei2RFgH0nVi15AIastKMOmH61ONFumPnwagJMwi4yVXssb4LrGabPryz28n/\nY1TT5DfJYFhyvkdd/KNO5VR/Dq/P1ny6EyFbXzuJ3eexnNTxsw13GOCpb23K\nbSeJ54olZsgRztsVDG0wAx7219oViW3qnH7lasgfdTk0xRDjFO4+2YqE1QP5\naA7bNX5oMGWYrDp1YKoY8yrV84mA30A7kZEsoyP0wtuqdabmeKV6T5HMaCGf\nM3mwLaiKphdnekxpk4R46KdiIKZPZcNCSGQUvXiDwK5G0Bep8bPFxvbC2IGj\nUkwA31dXrq4HbvPJnX/92lhir29zVJKnLLJjrAZejA3Ka4EwNqiY524xXSGC\ntdo+qkXN4qJWZVHgqbimwJP1MIlqr1S91aJjfdaUspn0H5pHGSYojkVNE71+\nEbbp\r\n=gMij\r\n-----END PGP SIGNATURE-----\r\n"
+  },
+  "gitHead": "5f7f0f2dff8989f5a3ce56bc935d3776a2cc4e63",
+  "homepage": "https://lookingglassfactory.com/devtools/holoplay-js-library",
+  "keywords": [
+    "holoplay",
+    "hologram",
+    "looking glass"
+  ],
+  "license": "SEE LICENSE IN HoloPlay_JS_License.pdf",
+  "main": "dist/holoplay.js",
+  "maintainers": [
+    {
+      "name": "alxdncn",
+      "email": "alex.duncan@lookingglassfactory.com"
+    },
+    {
+      "name": "evan.moore.lkg",
+      "email": "evan.moore@lookingglassfactory.com"
+    },
+    {
+      "name": "rasca0027",
+      "email": "kelly@lookingglassfactory.com"
+    },
+    {
+      "name": "yunhann",
+      "email": "yunhan@lookingglassfactory.com"
+    }
+  ],
+  "module": "dist/holoplay.module.js",
+  "name": "holoplay",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "scripts": {
+    "build": "rollup --config && terser dist/holoplay.js -m --output dist/holoplay.min.js",
+    "dev": "concurrently --names \"ROLLUP,HTTP\" -c \"bgBlue.bold,bgGreen.bold\" \"rollup -c -w -m inline\" \"http-server -c-1 -p 8080\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "1.0.3"
+}
