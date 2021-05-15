@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html  lang="jp">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width">
+<title></title>
+<script src='https://unpkg.com/@ffmpeg/ffmpeg@0.9.8/dist/ffmpeg.min.js'></script>
+<script>
+const { createFFmpeg,fetchFile } = FFmpeg;
+const $ = id=>document.getElementById(id)
+
+let lgw 
+function sendmsg(cmd,param) {
+	if(!lgw) return
+	const p = {} 
+	if(cmd) p.cmd = cmd
+	if(param) p.param = param
+	return lgw.msg(p)
+}
+let pparam 
+function childloaded(setting) {
+	console.log(setting)
+	console.log("lgw loaded")
+	pparam = setting.param
+	console.log(pparam)
+	$('plist').innerHTML = pparam.map(o=>{
+		if(!o.step) o.step = 1 
+		return 	`<dt>${o.name}</dt><dd><input type=range name=${o.name} min=${o.min} max=${o.max} step=${o.step} value=${o.value}><span></span></dd>`
+	}).join("\n")
+	document.querySelectorAll("#f input").forEach(o=>{
+		o.addEventListener("input", ev=>{
+			const o = ev.target 
+			const param = {}
+			if(o.nextSibling) o.nextSibling.innerHTML = o.value 
+			param[o.name] = o.value
+			sendmsg(null,param)
+		})
+	})
+}
+onload = function() {
+	$('b_open').addEventListener("click", ev=>{
+		lgw = window.open($('i_window').value,"lgw","width=600,height=800")
+		console.log(lgw)
+	})
+	$('b_close').addEventListener("click", ev=>{
+		if(lgw) lgw.close()
+	})
+	$("b_ss").addEventListener("change", ev=>{
+		sendmsg("render",{mode:ev.target.value})	
+	})
+
+	$("b_render").addEventListener("click",setrender)
+	function setrender() {
+		const f = new FormData($('r'))
+		const p = {}
+		f.forEach((v,k)=>{p[k]=v})
+		console.log(p)
+		sendmsg("setRender",p)
+	}
+	$('r_time').addEventListener("input", ev=>{
+		const o = ev.target 
+		if(o.nextSibling) o.nextSibling.innerHTML = o.value 
+		const param = {mode:2,time:parseFloat(o.value)}
+		sendmsg("render",param)
+	})
+	$("b_downimg").addEventListener("click", ev=>{
+		var img = sendmsg("getcanvas").toDataURL() ;
+		document.getElementById("a_down").href = img 
+	})
+	let mimgs 
+	$("b_mrender").addEventListener("click", ev=>{
+		const f = new FormData($('c'))
+		const p = {}
+		f.forEach((v,k)=>{p[k]=parseFloat(v)})
+		console.log(p)	
+		rendmovie(p).then((imgs)=>{
+			console.log(imgs)
+			mimgs = imgs
+		})
+	})
+
+	$("b_mcap").addEventListener("click", ev=>{
+		encodemovie(mimgs).then(()=>{
+			
+		})
+	})
+}
+function rendmovie(p) {
+	return new Promise((resolve,reject)=>{
+		const imgs = []
+		sendmsg("render",{mode:0})
+		const fr = (p.etime-p.stime)*p.fps
+		const source = sendmsg("getcanvas")
+		const ctx = $('mcan').getContext("2d")
+		const img = document.createElement("img")
+		let f = 0 
+		let t = p.stime
+		requestAnimationFrame(()=>{ff(t)})
+		function ff(t) {
+			sendmsg("render",{mode:2,time:t,cb:()=>{
+				$('rp').innerHTML = `${imgs.length}/${fr}` 
+				source.toBlob(b=>{
+					imgs.push(b)
+
+					if(++f<fr) {
+						t = (p.stime + (p.etime-p.stime)*f/fr)*1000
+						requestAnimationFrame(()=>{ff(t)})
+					} else {
+						resolve(imgs)
+					}
+				})
+			}})
+		}
+	})
+}
+async function encodemovie(imgs) {
+	const ffmpeg = createFFmpeg({ log: true })
+	await ffmpeg.load()
+	ffmpeg.setProgress(({ ratio }) => {
+		$('ep').innerHTML = ratio
+ 	})
+	for(let i=0;i<imgs.length;i++) {
+		ffmpeg.FS('writeFile', "img"+i+".png", await fetchFile(imgs[i]))
+	}
+	await ffmpeg.run(...("-framerate 60 -i img%d.png -an -crf 20 -vcodec libx264 -pix_fmt yuv420p -r 60 o.mp4".split(" ")))
+	const data = ffmpeg.FS('readFile', 'o.mp4');
+	const src = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }))
+	console.log(src)
+	$('downloadlink').href = src
+}
+function capmovie(imgs) {
+	return new Promise((resolve,reject)=>{
+		const fps = 60
+		const dur = imgs.length/fps *1000
+		const st = performance.now()
+		requestAnimationFrame(ff)
+		function ff(time) {
+			const t = (performance.now()-st)
+			if(t>dur) {
+				resolve() 
+				return
+			}
+			const n = Math.floor(t/dur*imgs.length) 
+			console.log(n)
+			ctx.drawImage(imgs[n],0,0)
+			requestAnimationFrame(ff)
+		}
+	})
+}
+</script>
+<style type="text/css">
+body {
+	background-color:black ;
+	color:white ;
+	font-size:1rem ;
+	line-height:2rem ;
+}
+button,input {
+	font-size:1rem ;
+}
+h3 {
+	margin:0;
+}
+dt {
+	width:9rem ;
+	text-align: right ;
+}
+dd {
+	margin-left:10rem; 
+	margin-top:-2rem ;
+}
+dd input[type=range] {
+	width:500px ;
+}
+</style>
+</head>
+<body>
+<div>
+lkg window:<input id=i_window type=text value="t3o.html">
+<button id=b_open>OPEN LookingGlass Window</button>
+<button id=b_close>close</button><br/>
+<dl>
+<dt>animation:</dt><dd>STOP<input type=range id=b_ss min=0 max=1 value=0 style="width:30px">START</dd>
+<dt>time(ms):</dt><dd><input id=r_time type=range name=time min=0 max=10000 value=0><span>0</span></dd>
+</dl>
+</div>
+<hr>
+<div>
+<h3>render mode</h3>
+<form id=r>
+<dl>
+	<dt>mode</dt><dd><label><input type=radio name=mode value=0 >LKG</label> <label><input type=radio name=mode value=1 checked>Quilt</label></dd>
+	<dt>tile size</dt><dd><input type=text name=tileX size=3 value=9> x <input type=text name=tileY size=3 value=5></dd>
+	<dt>resolution</dt><dd><input type=text name=res size=4 value=3000></dd>
+</dl>
+</form>
+<div  style="margin-left:25rem;margin-top:-3rem"><button id=b_render> set render</button></div>
+
+</div>
+<hr>
+<div>
+<h3>scene params</h3>
+<form id=f>
+<dl id=plist>
+</dl>
+</form>
+</div>
+<hr/>
+<h3>capture</h3>
+<div>
+<button id=b_downimg><a href="" id=a_down download="quilt.png">image DOWNLOAD</a></button><br/>
+<form id=c>
+<dl>
+<dt>time range:</dt><dd>start:<input type=text name=stime size=5 value=0> end:<input type=text name=etime size=5 value=5></dd>
+ <dt>fps:</dt><dd><input type=text name=fps size=5 value=60></dd>
+</dl>
+</form>
+<button id=b_mrender>RENDER movie</button><span id=rp></span><br/>
+<button id=b_mcap>ENCODE movie</button><span id=ep></span> 
+<a  id=downloadlink download="v.mp4">download</a><br/>
+<canvas id=mcan width=300 height=300 style="width:300px;display:block">
+</div>
+<hr/>
+</body>
+</html>

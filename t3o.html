@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<script src="js/three.js/build/three.min.js"></script>
+<script src="js/holoplay/dist/holoplay.js?1"></script>
+<script src="js/three.js/examples/js/loaders/OBJLoader.js"></script>
+<script >
+const quilt = true 
+const RAD = Math.PI/180
+let sc 
+const settings = {
+	param:[
+		{name:"rotY",min:0,max:360,value:0},
+		{name:"tilt",min:0,max:180,value:90},
+		{name:"viewZ",min:-0.5,max:0.5,step:0.001,value:0},
+		{name:"wscale",min:1,max:2,step:0.01,value:1}
+	]
+}
+function msg(m) {
+	console.log(m)
+	if(m.cmd) {
+		switch(m.cmd) {
+			case "getparam":
+				return settings.param 
+				break ;
+			case "render":
+				if(m.param.mode==0) sc.pause()
+				if(m.param.mode==1) sc.start()
+				if(m.param.mode==2) {
+					sc.oneframe(m.param.time,(time)=>{
+						if(m.param.cb) m.param.cb()
+					})
+				}
+				break
+			case "getcanvas":
+				return document.querySelector("canvas")
+				break ;
+			case "setRender":
+				sc.renderer.tileCount = new THREE.Vector2(m.param.tileX,m.param.tileY)
+				sc.renderer.quiltResolution = m.param.res 
+				sc.renderer.disableFullscreenUi = false
+				sc.renderer.renderQuilt = (m.param.mode==1)
+				sc.oneframe(null)
+				break 
+		}
+	} else if(m.param) {
+		sc.setParam(m.param)
+		sc.oneframe(null)
+	}
+}
+window.addEventListener("load",() =>{
+	if(window.opener) window.opener.childloaded(settings)
+	sc = new Scene()
+	sc.oneframe(0)
+})
+class SceneBase {
+constructor() {
+	this.stree = {}
+	this.renderer = this.mkRender([9,5],3000,true) 
+	this.camera = this.mkCamera()
+	this.scene  = this.mkScene()
+	document.body.appendChild(this.renderer.domElement)
+
+	this.stree.renderer = this.renderer
+	this.stree.camera = this.camera 
+	this.rf = true 
+	this.ctime = 0
+	console.log(this.stree) 
+}
+complete() {
+	this.oneframe(this.ctime)
+}
+start() {
+	this.rf = true 
+	const update = (time) => {
+		this.ctime = time 
+	  if(this.rf) requestAnimationFrame(update);
+		this.setframe(time)
+	  try {
+		   this.renderer.render(this.scene, this.camera);
+	  } catch(err) {
+	    console.log(err)
+	  }
+	}
+	requestAnimationFrame(update);	
+}
+pause() {
+	this.rf = false 
+}
+oneframe(time,cb) {
+	if(time===null) time = this.ctime
+	else this.ctime = time 
+	this.setframe(time)
+	try {
+		this.renderer.render(this.scene, this.camera);
+	} catch(err) {
+	    console.log(err)
+	}
+	if(cb) cb(time)
+}
+mkRender(tile=[9,5],res=3000,quilt=false) {
+		const renderer = new HoloPlay.Renderer({
+		  tileCount:new THREE.Vector2(tile[0],tile[1]),
+		  quiltResolution:res,
+			disableFullscreenUi: false,
+			renderQuilt: quilt,
+			webGLOptions:{preserveDrawingBuffer:quilt}
+		  });	
+		return renderer 
+	}
+mkCamera() {
+		const camera = new HoloPlay.Camera()
+		return camera 
+	}
+}
+
+class Scene extends SceneBase {
+setParam(param) {
+	for(let k in param) {
+		const v = param[k]
+		switch(k) {
+			case "rotZ":
+				this.stree.node.world.children.base.o3d.rotation.z = v * RAD 
+				break
+			case "tilt":
+				this.stree.node.world.children.base.o3d.rotation.x = -v * RAD
+				break ;
+			case "viewZ":
+				this.stree.node.world.o3d.position.z = v 
+				break; 
+			case "wscale":
+				this.stree.node.world.o3d.scale.z = v 
+				break
+		}
+	}	
+}
+setframe(time) {
+	console.log(time)
+	const tloop = 5000 
+	this.stree.node.world.children.base.o3d.rotation.z = (time % tloop)/tloop * 360 * RAD 
+}
+mkScene() {
+	const scene = new THREE.Scene()
+	this.stree.scene = scene 
+		
+	const base = new THREE.Object3D 
+	const world = new THREE.Object3D 
+    const plane = new THREE.Mesh(
+	  new THREE.PlaneBufferGeometry(0.14,0.14),
+	  new THREE.MeshPhongMaterial({color:0x884444}));
+	  plane.position.y = -0
+	  plane.position.z = -0
+    base.add(plane);
+    this.stree.node = { 
+			"world":{o3d:world,children:{
+		    	"base":{o3d:base,children:{
+			    "plane":{o3d:plane}}
+					}
+				}
+			}
+		}
+
+    const objLoader = new THREE.OBJLoader()
+		objLoader.load('/wgl/poxd/res/bunny_s.obj', (obj) => {
+			console.log(obj)
+			obj.children[0].materal = new THREE.MeshPhongMaterial({color: 'red'})
+			obj.scale.x =0.7
+			obj.scale.y =0.7
+			obj.scale.z =0.7
+			obj.rotation.x = 90 * RAD 
+			obj.position.x = 0.01 
+			obj.position.z = -0.025
+			base.add(obj)
+			this.stree.node.world.children.base.children["obj"] = {o3d:obj}
+			this.complete()
+		});
+    
+    base.rotation.x = RAD *-90
+    base.position.y = -0.05 
+
+    world.add(base)
+    scene.add(world)
+    world.scale.z = 1.2
+    
+    const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 0.9);
+    directionalLight.position.set(1, 3, 2);
+    scene.add(directionalLight);
+    this.stree.dLight = directionalLight
+
+    const ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.2);
+    scene.add(ambientLight);
+    this.stree.aLight = ambientLight
+
+		return scene
+	}
+}
+</script>
+</html>
