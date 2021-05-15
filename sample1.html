@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
+<title>lge sample1</title>
 <script src="//cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="js/holoplay/dist/holoplay.js?1"></script>
+<script src="js/lge.js"></script>
 <script src="js/OBJLoader.js"></script>
 <script >
-const quilt = true 
 const RAD = Math.PI/180
-let sc 
 const settings = {
 	param:[
 		{name:"rotY",min:0,max:360,value:0},
@@ -15,104 +15,6 @@ const settings = {
 		{name:"wscale",min:1,max:2,step:0.01,value:1}
 	]
 }
-function msg(m) {
-	console.log(m)
-	if(m.cmd) {
-		switch(m.cmd) {
-			case "getparam":
-				return settings.param 
-				break ;
-			case "render":
-				if(m.param.mode==0) sc.pause()
-				if(m.param.mode==1) sc.start()
-				if(m.param.mode==2) {
-					sc.oneframe(m.param.time,(time)=>{
-						if(m.param.cb) m.param.cb()
-					})
-				}
-				break
-			case "getcanvas":
-				return document.querySelector("canvas")
-				break ;
-			case "setRender":
-				sc.renderer.tileCount = new THREE.Vector2(m.param.tileX,m.param.tileY)
-				sc.renderer.quiltResolution = m.param.res 
-				sc.renderer.disableFullscreenUi = false
-				sc.renderer.renderQuilt = (m.param.mode==1)
-				sc.oneframe(null)
-				break 
-		}
-	} else if(m.param) {
-		sc.setParam(m.param)
-		sc.oneframe(null)
-	}
-}
-window.addEventListener("load",() =>{
-	if(window.opener) window.opener.childloaded(settings)
-	sc = new Scene()
-	sc.oneframe(0)
-})
-class SceneBase {
-constructor() {
-	this.stree = {}
-	this.renderer = this.mkRender([9,5],3000,true) 
-	this.camera = this.mkCamera()
-	this.scene  = this.mkScene()
-	document.body.appendChild(this.renderer.domElement)
-
-	this.stree.renderer = this.renderer
-	this.stree.camera = this.camera 
-	this.rf = true 
-	this.ctime = 0
-	console.log(this.stree) 
-}
-complete() {
-	this.oneframe(this.ctime)
-}
-start() {
-	this.rf = true 
-	const update = (time) => {
-		this.ctime = time 
-	  if(this.rf) requestAnimationFrame(update);
-		this.setframe(time)
-	  try {
-		   this.renderer.render(this.scene, this.camera);
-	  } catch(err) {
-	    console.log(err)
-	  }
-	}
-	requestAnimationFrame(update);	
-}
-pause() {
-	this.rf = false 
-}
-oneframe(time,cb) {
-	if(time===null) time = this.ctime
-	else this.ctime = time 
-	this.setframe(time)
-	try {
-		this.renderer.render(this.scene, this.camera);
-	} catch(err) {
-	    console.log(err)
-	}
-	if(cb) cb(time)
-}
-mkRender(tile=[9,5],res=3000,quilt=false) {
-		const renderer = new HoloPlay.Renderer({
-		  tileCount:new THREE.Vector2(tile[0],tile[1]),
-		  quiltResolution:res,
-			disableFullscreenUi: false,
-			renderQuilt: quilt,
-			webGLOptions:{preserveDrawingBuffer:quilt}
-		  });	
-		return renderer 
-	}
-mkCamera() {
-		const camera = new HoloPlay.Camera()
-		return camera 
-	}
-}
-
 class Scene extends SceneBase {
 setParam(param) {
 	for(let k in param) {
