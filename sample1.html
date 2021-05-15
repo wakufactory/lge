@@ -160,7 +160,7 @@ mkScene() {
 		}
 
     const objLoader = new THREE.OBJLoader()
-		objLoader.load('/wgl/poxd/res/bunny_s.obj', (obj) => {
+		objLoader.load('sample/bunny_s.obj', (obj) => {
 			console.log(obj)
 			obj.children[0].materal = new THREE.MeshPhongMaterial({color: 'red'})
 			obj.scale.x =0.7
