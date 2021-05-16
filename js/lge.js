@@ -34,10 +34,10 @@ function msg(m) {
 }
 window.addEventListener("load",() =>{
 	_scene = new Scene()
+	_scene.setParam(settings.param.reduce((a,o)=>{a[o.name]=o.value;return a},{}))
 	_scene.oneframe(0)
 	if(window.opener) window.opener.childloaded(settings)
 	else {
-		_scene.setParam(settings.param.reduce((a,o)=>{a[o.name]=o.value;return a},{}))
 		_scene.start()
 	}
 })
