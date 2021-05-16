@@ -6,10 +6,11 @@
 <title></title>
 <script src='https://unpkg.com/@ffmpeg/ffmpeg@0.9.8/dist/ffmpeg.min.js'></script>
 <script>
-const { createFFmpeg,fetchFile } = FFmpeg;
+const { createFFmpeg,fetchFile } = FFmpeg
 const $ = id=>document.getElementById(id)
 
 let lgw // LKG window
+let rparam = {} 
 //send message to LKG window
 function sendmsg(cmd,param) {
 	if(!lgw) return
@@ -37,6 +38,9 @@ function childloaded(setting) {
 			sendmsg(null,param)
 		})
 	})
+	const f = new FormData($('r'))
+	f.forEach((v,k)=>{rparam[k]=v})
+	sendmsg("setRender",rparam)
 }
 onload = function() {
 	// window open
@@ -53,7 +57,7 @@ onload = function() {
 		sendmsg("render",{mode:ev.target.value})	
 	})
 	// rendering mode set
-	let rparam = {} 
+
 	$("b_render").addEventListener("click",setrender)
 	function setrender() {
 		const f = new FormData($('r'))
@@ -70,7 +74,7 @@ onload = function() {
 	})
 	// capture image download
 	$("b_downimg").addEventListener("click", ev=>{
-		var img = sendmsg("getcanvas").toDataURL() ;
+		const img = sendmsg("getcanvas").toDataURL() ;
 		document.getElementById("a_down").href = img 
 	})
 	// movie rendering
@@ -149,6 +153,13 @@ body {
 button,input {
 	font-size:1rem ;
 }
+button {
+	background-color:#4444cc ;
+	color:white ;
+}
+a {
+	color:white ;	
+}
 h3 {
 	margin:0;
 }
@@ -192,7 +203,7 @@ LKG window:<input id=i_window type=text value="sample1.html">
 <h3>render mode</h3>
 <form id=r>
 <dl>
-	<dt>mode</dt><dd><label><input type=radio name=mode value=0 >LKG</label> <label><input type=radio name=mode value=1 checked>Quilt</label></dd>
+	<dt>mode</dt><dd><label><input type=radio name=mode value=0 checked>LKG</label> <label><input type=radio name=mode value=1 >Quilt</label></dd>
 	<dt>tile size</dt><dd><input type=text name=tileX size=3 value=9> x <input type=text name=tileY size=3 value=5></dd>
 	<dt>resolution</dt><dd><input type=text name=res size=4 value=2600></dd>
 </dl>

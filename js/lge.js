@@ -33,16 +33,20 @@ function msg(m) {
 	}
 }
 window.addEventListener("load",() =>{
-	if(window.opener) window.opener.childloaded(settings)
 	_scene = new Scene()
 	_scene.oneframe(0)
+	if(window.opener) window.opener.childloaded(settings)
+	else {
+		_scene.setParam(settings.param.reduce((a,o)=>{a[o.name]=o.value;return a},{}))
+		_scene.start()
+	}
 })
 
 // scene base class
 class SceneBase {
 constructor() {
 	this.stree = {}
-	this.renderer = this.mkRender([9,5],3000,true) 
+	this.renderer = this.mkRender([9,5],3000,false) 
 	this.camera = this.mkCamera()
 	this.scene  = this.mkScene()
 	document.body.appendChild(this.renderer.domElement)
@@ -85,13 +89,14 @@ oneframe(time,cb) {
 	if(cb) cb(time)
 }
 mkRender(tile=[9,5],res=3000,quilt=false) {
-		const renderer = new HoloPlay.Renderer({
+		let renderer 
+		renderer = new HoloPlay.Renderer({
 		  tileCount:new THREE.Vector2(tile[0],tile[1]),
 		  quiltResolution:res,
 			disableFullscreenUi: false,
 			renderQuilt: quilt,
 			webGLOptions:{preserveDrawingBuffer:quilt}
-		  });	
+		  });
 		return renderer 
 	}
 mkCamera() {
