@@ -43,6 +43,9 @@ function childloaded(setting) {
 	sendmsg("setRender",rparam)
 }
 onload = function() {
+	if(location.search) {
+		$('i_window').value = location.search.substring(1)
+	}
 	// window open
 	$('b_open').addEventListener("click", ev=>{
 		lgw = window.open($('i_window').value,"lgw","width=600,height=800")
