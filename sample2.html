@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<title>lge sample2</title>
+<script src="//cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="js/holoplay/dist/holoplay.js?1"></script>
+<script src="js/lge.js?1"></script>
+<script >
+const RAD = Math.PI/180
+const settings = {
+	param:[
+		{name:"rotY",min:0,max:360,value:0},
+		{name:"tilt",min:0,max:180,value:60},
+		{name:"viewZ",min:-0.5,max:0.5,step:0.001,value:0},
+		{name:"bscale",min:0.5,max:2,step:0.001,value:0.6},
+		{name:"wscale",min:1,max:2,step:0.01,value:1}
+	]
+}
+class Scene extends SceneBase {
+setParam(param) {
+	console.log(param)
+	for(let k in param) {
+		const v = param[k]
+		switch(k) {
+			case "rotY":
+				this.stree.node.world.children.base.o3d.rotation.z = v * RAD 
+				break
+			case "tilt":
+				this.stree.node.world.children.base.o3d.rotation.x = -v * RAD
+				break ;
+			case "viewZ":
+				this.stree.node.world.o3d.position.z = v 
+				break; 
+			case "bscale":
+				this.stree.node.world.children.base.o3d.scale.set(v,v,v)
+				break
+			case "wscale":
+				this.stree.node.world.o3d.scale.z = v 
+				break
+		}
+	}	
+}
+setframe(time) {
+//	console.log(time)
+	const tloop = 10000 
+	const tt = (time % tloop)/tloop
+	this.stree.node.world.children.base.o3d.rotation.z = tt*360* RAD 
+	this.stree.node.world.children.base.children.torus1.o3d.rotation.x = tt*2 * 360 * RAD 
+	this.stree.node.world.children.base.children.torus2.o3d.rotation.x = (tt*2 * 360 + 90) * RAD 
+	this.stree.node.world.children.base.children.sphere1.o3d.position.z = 0.05+0.08* Math.sin(tt*2*360*RAD)
+	this.stree.node.world.children.base.children.sphere2.o3d.position.z = 0.05+0.08* Math.sin((tt*2*360+90)*RAD)
+}
+mkScene() {
+	const scene = new THREE.Scene()
+	this.stree.scene = scene 
+
+	this.renderer.webglRenderer.shadowMap.enabled = true 
+	this.renderer.webglRenderer.shadowMap.type = THREE.PCFSoftShadowMap
+
+	const world = new THREE.Object3D 
+	world.scale.z = 1.2
+	scene.add(world)
+	const base = new THREE.Object3D
+	base.rotation.x = RAD *-90
+	base.position.y = -0.0 
+	world.add(base)
+
+	const plane = new THREE.Mesh(
+		new THREE.PlaneBufferGeometry(0.2,0.14),
+		new THREE.MeshPhongMaterial({color:0x884444})
+	)
+	plane.position.y = -0.0
+	plane.position.z = -0.05
+	plane.receiveShadow = true
+	base.add(plane);
+	
+	const torus1 = new THREE.Mesh(
+		new THREE.TorusBufferGeometry(0.03,0.01,16,60),
+		new THREE.MeshStandardMaterial({color:0x44ff44,roughness:0.6,metalness:0.8})
+	)
+	torus1.rotation.x = 90 * RAD 
+	torus1.position.z = 0.05
+	torus1.position.x = 0.05
+	torus1.castShadow = true 
+	base.add(torus1) 
+	const torus2 = new THREE.Mesh(
+		new THREE.TorusBufferGeometry(0.03,0.01,16,60),
+		new THREE.MeshStandardMaterial({color:0x4444ff,roughness:0.6,metalness:0.8})
+	)
+	torus2.rotation.x = 90 * RAD 
+	torus2.position.z = 0.05
+	torus2.position.x = -0.05
+	torus2.castShadow = true 
+	base.add(torus2) 
+	
+	const sphere1 = new THREE.Mesh(
+		new THREE.SphereBufferGeometry(0.02,32,32),
+		new THREE.MeshStandardMaterial({color:0xff4444})
+	)
+	sphere1.position.z = 0.05
+	sphere1.position.x = 0.05 
+	sphere1.castShadow = true 
+	base.add(sphere1) 
+	const sphere2 = new THREE.Mesh(
+		new THREE.SphereBufferGeometry(0.02,32,32),
+		new THREE.MeshStandardMaterial({color:0xffff44})
+	)
+	sphere2.position.z = 0.05
+	sphere2.position.x = -0.05 
+	sphere2.castShadow = true 
+	base.add(sphere2) 	
+	this.stree.node = { 
+		"world":{o3d:world,children:{
+			"base":{o3d:base,children:{
+				"plane":{o3d:plane},
+				"torus1":{o3d:torus1},
+				"torus2":{o3d:torus2},
+				"sphere1":{o3d:sphere1},
+				"sphere2":{o3d:sphere2}
+			}}
+		}}
+	}
+	
+	const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 0.9);
+	directionalLight.position.set(1, 3, 2);
+	directionalLight.castShadow = true;
+	directionalLight.shadow.mapSize.width = 4096;
+	directionalLight.shadow.mapSize.height = 4096;
+	directionalLight.shadow.radius = 0
+	scene.add(directionalLight);
+	this.stree.dLight = directionalLight
+	
+	const ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.3);
+	scene.add(ambientLight);
+	this.stree.aLight = ambientLight
+
+	return scene
+}
+} //class Scene
+</script>
+</html>
