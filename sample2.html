@@ -11,13 +11,12 @@ const settings = {
 		{name:"rotY",min:0,max:360,value:0},
 		{name:"tilt",min:0,max:180,value:60},
 		{name:"viewZ",min:-0.5,max:0.5,step:0.001,value:0},
-		{name:"bscale",min:0.5,max:2,step:0.001,value:0.6},
+		{name:"bscale",min:0.5,max:2,step:0.001,value:0.742},
 		{name:"wscale",min:1,max:2,step:0.01,value:1}
 	]
 }
 class Scene extends SceneBase {
 setParam(param) {
-	console.log(param)
 	for(let k in param) {
 		const v = param[k]
 		switch(k) {
