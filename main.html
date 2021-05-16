@@ -9,7 +9,8 @@
 const { createFFmpeg,fetchFile } = FFmpeg;
 const $ = id=>document.getElementById(id)
 
-let lgw 
+let lgw // LKG window
+//send message to LKG window
 function sendmsg(cmd,param) {
 	if(!lgw) return
 	const p = {} 
@@ -17,12 +18,12 @@ function sendmsg(cmd,param) {
 	if(param) p.param = param
 	return lgw.msg(p)
 }
+// callback from LKG window
 let pparam 
 function childloaded(setting) {
-	console.log(setting)
-	console.log("lgw loaded")
 	pparam = setting.param
 	console.log(pparam)
+	// make scene parameter UI 
 	$('plist').innerHTML = pparam.map(o=>{
 		if(!o.step) o.step = 1 
 		return 	`<dt>${o.name}</dt><dd><input type=range name=${o.name} min=${o.min} max=${o.max} step=${o.step} value=${o.value}><span></span></dd>`
@@ -38,53 +39,58 @@ function childloaded(setting) {
 	})
 }
 onload = function() {
+	// window open
 	$('b_open').addEventListener("click", ev=>{
 		lgw = window.open($('i_window').value,"lgw","width=600,height=800")
 		console.log(lgw)
 	})
+	// window close
 	$('b_close').addEventListener("click", ev=>{
 		if(lgw) lgw.close()
 	})
+	// animation start/stop
 	$("b_ss").addEventListener("change", ev=>{
 		sendmsg("render",{mode:ev.target.value})	
 	})
-
+	// rendering mode set
+	let rparam = {} 
 	$("b_render").addEventListener("click",setrender)
 	function setrender() {
 		const f = new FormData($('r'))
-		const p = {}
-		f.forEach((v,k)=>{p[k]=v})
-		console.log(p)
-		sendmsg("setRender",p)
+		f.forEach((v,k)=>{rparam[k]=v})
+		console.log(rparam)
+		sendmsg("setRender",rparam)
 	}
+	// animation timme bar
 	$('r_time').addEventListener("input", ev=>{
 		const o = ev.target 
 		if(o.nextSibling) o.nextSibling.innerHTML = o.value 
 		const param = {mode:2,time:parseFloat(o.value)}
 		sendmsg("render",param)
 	})
+	// capture image download
 	$("b_downimg").addEventListener("click", ev=>{
 		var img = sendmsg("getcanvas").toDataURL() ;
 		document.getElementById("a_down").href = img 
 	})
+	// movie rendering
 	let mimgs 
 	$("b_mrender").addEventListener("click", ev=>{
 		const f = new FormData($('c'))
-		const p = {}
-		f.forEach((v,k)=>{p[k]=parseFloat(v)})
-		console.log(p)	
-		rendmovie(p).then((imgs)=>{
+		f.forEach((v,k)=>{rparam[k]=parseFloat(v)})
+		console.log(rparam)	
+		rendmovie(rparam).then((imgs)=>{
 			console.log(imgs)
 			mimgs = imgs
 		})
 	})
-
+	// encode movie 
 	$("b_mcap").addEventListener("click", ev=>{
-		encodemovie(mimgs).then(()=>{
-			
-		})
+		$('downloadlink').parentNode.style.display = "none"
+		encodemovie(mimgs,rparam)
 	})
 }
+// rendering frames
 function rendmovie(p) {
 	return new Promise((resolve,reject)=>{
 		const imgs = []
@@ -111,7 +117,8 @@ function rendmovie(p) {
 		}
 	})
 }
-async function encodemovie(imgs) {
+// encode movie 
+async function encodemovie(imgs,p) {
 	const ffmpeg = createFFmpeg({ log: false })
 	await ffmpeg.load()
 	ffmpeg.setLogger(({ type, message }) => {
@@ -122,10 +129,12 @@ async function encodemovie(imgs) {
 	for(let i=0;i<imgs.length;i++) {
 		ffmpeg.FS('writeFile', "img"+i+".png", await fetchFile(imgs[i]))
 	}
-	const opt = "-framerate 60 -i img%d.png "+$('i_ffmpeg').value+" o.mp4"
+	const opt = `-framerate ${p.fps} -i img%d.png ${$('i_ffmpeg').value} -r ${p.fps} o.mp4`
 	await ffmpeg.run(...(opt.split(" ")))
 	const data = ffmpeg.FS('readFile', 'o.mp4');
 	const src = URL.createObjectURL(new Blob([data.buffer], { type: 'video/mp4' }))
+	const dname = $('i_window').value.replace(/\.html$/,"")
+	$('downloadlink').download = `${dname}_${p.tileX}x${p.tileY}.mp4`
 	$('downloadlink').parentNode.style.display = "inline"
 	$('downloadlink').href = src
 }
@@ -162,7 +171,7 @@ dd input[type=range] {
 </head>
 <body>
 <div>
-lkg window:<input id=i_window type=text value="sample1.html">
+LKG window:<input id=i_window type=text value="sample1.html">
 <button id=b_open>OPEN LookingGlass Window</button>
 <button id=b_close>close</button><br/>
 <dl>
@@ -171,6 +180,14 @@ lkg window:<input id=i_window type=text value="sample1.html">
 </dl>
 </div>
 <hr>
+<div>
+<h3>scene params</h3>
+<form id=f>
+<dl id=plist>
+</dl>
+</form>
+</div>
+<hr/>
 <div>
 <h3>render mode</h3>
 <form id=r>
@@ -184,14 +201,7 @@ lkg window:<input id=i_window type=text value="sample1.html">
 
 </div>
 <hr>
-<div>
-<h3>scene params</h3>
-<form id=f>
-<dl id=plist>
-</dl>
-</form>
-</div>
-<hr/>
+
 <h3>capture</h3>
 <div>
 <button id=b_downimg><a href="" id=a_down download="quilt.png">image DOWNLOAD</a></button><br/>
@@ -204,7 +214,7 @@ lkg window:<input id=i_window type=text value="sample1.html">
 <button id=b_mrender>RENDER movie</button> <span id=rp></span><br/>
 <button id=b_mcap>ENCODE movie</button> <span id=ep></span> 
 <button style="display:none"><a id=downloadlink download="v.mp4" >movie DOWNLOAD</a></button><br/>
-ffmpeg option: <input id=i_ffmpeg size=60 value="-an -crf 20 -vcodec libx264 -pix_fmt yuv420p -r 60 "><br/>
+ffmpeg option: <input id=i_ffmpeg size=60 value="-an -crf 20 -vcodec libx264 -pix_fmt yuv420p "><br/>
 log: <textarea id=t_log cols=100 rows=10></textarea>
 </div>
 <hr/>

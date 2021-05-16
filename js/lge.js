@@ -1,5 +1,5 @@
 let _scene 
-
+// message from main window
 function msg(m) {
 	console.log(m)
 	if(m.cmd) {
@@ -37,6 +37,8 @@ window.addEventListener("load",() =>{
 	_scene = new Scene()
 	_scene.oneframe(0)
 })
+
+// scene base class
 class SceneBase {
 constructor() {
 	this.stree = {}

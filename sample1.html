@@ -7,6 +7,7 @@
 <script src="js/OBJLoader.js"></script>
 <script >
 const RAD = Math.PI/180
+// scene settings 
 const settings = {
 	param:[
 		{name:"rotY",min:0,max:360,value:0},
@@ -16,6 +17,7 @@ const settings = {
 	]
 }
 class Scene extends SceneBase {
+// set parameter from main window
 setParam(param) {
 	for(let k in param) {
 		const v = param[k]
@@ -35,11 +37,13 @@ setParam(param) {
 		}
 	}	
 }
+// animation frame set 
 setframe(time) {
 	console.log(time)
 	const tloop = 5000 
 	this.stree.node.world.children.base.o3d.rotation.z = (time % tloop)/tloop * 360 * RAD 
 }
+// initial scene making with three.js 
 mkScene() {
 	const scene = new THREE.Scene()
 	this.stree.scene = scene 
