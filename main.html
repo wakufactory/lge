@@ -84,7 +84,7 @@ onload = function() {
 		const img = sendmsg("getcanvas").toDataURL() ;
 		document.getElementById("a_down").href = img 
 	})
-	// movie rendering
+	// video rendering
 	let mimgs 
 	$("b_mrender").addEventListener("click", ev=>{
 		const f = new FormData($('c'))
@@ -229,9 +229,9 @@ LKG window:<input id=i_window type=text value="sample1.html">
  <dt>fps:</dt><dd><input type=text name=fps size=5 value=60></dd>
 </dl>
 </form>
-<button id=b_mrender>RENDER movie</button> <span id=rp></span><br/>
-<button id=b_mcap>ENCODE movie</button> <span id=ep></span> 
-<button style="display:none"><a id=downloadlink download="v.mp4" >movie DOWNLOAD</a></button><br/>
+<button id=b_mrender>RENDER video</button> <span id=rp></span><br/>
+<button id=b_mcap>ENCODE video</button> <span id=ep></span> 
+<button style="display:none"><a id=downloadlink download="v.mp4" >video DOWNLOAD</a></button><br/>
 ffmpeg option: <input id=i_ffmpeg size=60 value="-an -crf 20 -vcodec libx264 -pix_fmt yuv420p "><br/>
 log: <textarea id=t_log cols=100 rows=10></textarea>
 </div>
