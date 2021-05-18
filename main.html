@@ -38,6 +38,10 @@ function childloaded(setting) {
 			sendmsg(null,param)
 		})
 	})
+	if(setting.animePeriod) {
+		$('c').querySelector("[name=etime]").value = setting.animePeriod/1000
+		$('r_time').max =  setting.animePeriod
+	}
 	const f = new FormData($('r'))
 	f.forEach((v,k)=>{rparam[k]=v})
 	sendmsg("setRender",rparam)
