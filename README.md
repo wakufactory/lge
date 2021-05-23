@@ -10,7 +10,7 @@ https://wakufactory.github.io/lge/main.html
 
 ## usage
 
-https://www.youtube.com/watch?v=HR1Eo7kUB5c
+https://www.youtube.com/watch?v=zEKOlwu57ps
 
 ## files
  - main.html : main control window
